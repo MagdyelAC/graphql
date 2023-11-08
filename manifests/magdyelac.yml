@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql-magdyelac
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphql-magdyelac
+  template:
+    metadata:
+      labels:
+        app: graphql-magdyelac
+    spec:
+      containers:
+      - image: okteto.dev/magdyelac:latest
+        name: magdyelac
+        #envFrom:
+        #- configMapRef:
+        #    name: magdyelac-config
+        livenessProbe:
+          httpGet:
+            path: /ht/
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphql-magdyelac
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP  
+  ports:
+  - name: "graphql-magdyelac"
+    port: 8080
+  selector:
+    app: graphql-magdyelac
